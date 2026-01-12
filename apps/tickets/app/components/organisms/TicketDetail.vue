@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import PriorityBadge from "../atoms/PriorityBadge.vue";
 import StatusBadge from "../atoms/StatusBadge.vue";
+import DeleteTicketModal from "./DeleteTicketModal.vue"; // 👈 agregado
 import type { Ticket } from "interfaces/index";
 import type NewTicketModal from "./NewTicketModal.vue";
 
@@ -12,8 +13,11 @@ const formatDate = (date: string) =>
     month: "short",
     day: "numeric",
   });
+
 const ticketModal = ref<InstanceType<typeof NewTicketModal> | null>(null);
-const emit = defineEmits(["update-status"]);
+const deleteModal = ref<InstanceType<typeof DeleteTicketModal> | null>(null); // 👈 agregado
+
+const emit = defineEmits(["update-status", "delete"]); // 👈 agregado delete
 
 function openModal(ticket: Ticket | null) {
   if (!ticket) {
@@ -23,11 +27,20 @@ function openModal(ticket: Ticket | null) {
   ticketModal.value?.openEdit(ticket);
   return;
 }
+
 function updateTicketStatus(ticket: {
   id: number;
   status: "open" | "in_progress" | "closed";
 }) {
   emit("update-status", { id: ticket.id, status: ticket.status });
+}
+
+function openDeleteModal(ticket: Ticket) {
+  deleteModal.value?.open(ticket);
+}
+
+function confirmDelete(ticketId: number) {
+  emit("delete", ticketId);
 }
 </script>
 
@@ -71,14 +84,16 @@ function updateTicketStatus(ticket: {
         </div>
       </div>
 
-      <!-- ACTIONS -->
       <div class="card-actions justify-end gap-2 mt-2">
         <BaseButton class="btn-outline btn-sm" @click="openModal(ticket)">
           Editar
         </BaseButton>
-        <BaseButton class="btn-error btn-sm"> Eliminar </BaseButton>
       </div>
     </div>
+
     <NewTicketModal ref="ticketModal" @update-status="updateTicketStatus" />
+
+    <!-- 👇 agregado -->
+    <DeleteTicketModal ref="deleteModal" @confirm="confirmDelete" />
   </div>
 </template>

@@ -7,10 +7,10 @@
     <form class="space-y-4" @submit.prevent="submit">
       <!-- Título -->
       <FormField
-        v-model="form.title"
+        v-model="fields.title.value"
         label="Título"
         placeholder="Título del ticket"
-        :error="errors.title"
+        :error="fields.title.error"
         :disabled="isEdit"
       />
 
@@ -20,11 +20,14 @@
           <span class="label-text">Descripción</span>
         </label>
         <textarea
-          v-model="form.description"
+          v-model="fields.description.value"
           class="textarea textarea-bordered w-full"
           placeholder="Descripción del ticket"
           :disabled="isEdit"
         />
+        <span v-if="fields.description.error" class="text-error text-sm">
+          {{ fields.description.error }}
+        </span>
       </div>
 
       <!-- Prioridad + Estado -->
@@ -34,7 +37,7 @@
             <span class="label-text">Prioridad</span>
           </label>
           <select
-            v-model="form.priority"
+            v-model="fields.priority.value"
             class="select select-bordered w-full"
             :disabled="isEdit"
           >
@@ -43,26 +46,36 @@
             <option value="medium">Media</option>
             <option value="low">Baja</option>
           </select>
+          <span v-if="fields.priority.error" class="text-error text-sm">
+            {{ fields.priority.error }}
+          </span>
         </div>
 
         <div class="w-full flex flex-col gap-2 p-2">
           <label class="label">
             <span class="label-text">Estado</span>
           </label>
-          <select v-model="form.status" class="select select-bordered w-full">
+          <select
+            v-model="fields.status.value"
+            class="select select-bordered w-full"
+          >
+            <option value="">Seleccionar estado</option>
             <option value="open">Abierto</option>
             <option value="in_progress">En progreso</option>
             <option value="closed">Cerrado</option>
           </select>
+          <span v-if="fields.status.error" class="text-error text-sm">
+            {{ fields.status.error }}
+          </span>
         </div>
       </div>
 
       <!-- Asignado -->
       <FormField
-        v-model="form.assignedTo"
+        v-model="fields.assignedTo.value"
         label="Asignado a"
         placeholder="Nombre del responsable"
-        :error="errors.assignedTo"
+        :error="fields.assignedTo.error"
         :disabled="isEdit"
       />
 
@@ -83,6 +96,8 @@
 import BaseModal from "../molecules/BaseModal.vue";
 import FormField from "../molecules/FormField.vue";
 import BaseButton from "../atoms/BaseButton.vue";
+import { ticketSchema } from "utils";
+import type { Ticket } from "interfaces";
 
 const baseModalRef = ref<InstanceType<typeof BaseModal> | null>(null);
 
@@ -90,21 +105,19 @@ const isEdit = ref(false);
 const editingId = ref<number | null>(null);
 
 const emit = defineEmits<{
-  (e: "create", ticket: any): void;
+  (e: "create", ticket: Ticket): void;
   (e: "update-status", payload: { id: number; status: string }): void;
 }>();
 
-const form = reactive({
-  title: "",
-  description: "",
-  priority: "",
-  status: "",
-  assignedTo: "",
-});
-
-const errors = reactive({
-  title: "",
-  assignedTo: "",
+/**
+ * Campos + errores agrupados
+ */
+const fields = reactive({
+  title: { value: "", error: "" },
+  description: { value: "", error: "" },
+  priority: { value: "", error: "" },
+  status: { value: "", error: "" },
+  assignedTo: { value: "", error: "" },
 });
 
 const open = () => {
@@ -112,10 +125,16 @@ const open = () => {
   baseModalRef.value?.open();
 };
 
-const openEdit = (ticket: any) => {
+const openEdit = (ticket: Ticket) => {
   isEdit.value = true;
   editingId.value = ticket.id;
-  Object.assign(form, ticket);
+
+  fields.title.value = ticket.title;
+  fields.description.value = ticket.description;
+  fields.priority.value = ticket.priority;
+  fields.status.value = ticket.status;
+  fields.assignedTo.value = ticket.assignedTo;
+
   baseModalRef.value?.open();
 };
 
@@ -123,52 +142,63 @@ const close = () => {
   baseModalRef.value?.close();
 };
 
-const validate = () => {
+/**
+ * Validación con TODOS los errores
+ */
+const validate = async () => {
   if (isEdit.value) return true;
 
-  errors.title = "";
-  errors.assignedTo = "";
+  // limpiar errores
+  Object.values(fields).forEach((f) => (f.error = ""));
 
-  let valid = true;
-
-  if (!form.title) {
-    errors.title = "El título es obligatorio";
-    valid = false;
+  try {
+    await ticketSchema.validate(
+      {
+        title: fields.title.value,
+        description: fields.description.value,
+        priority: fields.priority.value,
+        status: fields.status.value,
+        assignedTo: fields.assignedTo.value,
+      },
+      { abortEarly: false }
+    );
+    return true;
+  } catch (err: any) {
+    err.inner.forEach((e: any) => {
+      if (e.path && fields[e.path as keyof typeof fields]) {
+        fields[e.path as keyof typeof fields].error = e.message;
+      }
+    });
+    return false;
   }
-
-  if (!form.assignedTo) {
-    errors.assignedTo = "Debe asignarse a alguien";
-    valid = false;
-  }
-
-  return valid;
 };
 
-const submit = () => {
-  if (!validate()) return;
+const submit = async () => {
+  if (!(await validate())) return;
+
+  const payload = {
+    title: fields.title.value,
+    description: fields.description.value,
+    priority: fields.priority.value,
+    status: fields.status.value,
+    assignedTo: fields.assignedTo.value,
+  };
 
   if (isEdit.value && editingId.value !== null) {
     emit("update-status", {
       id: editingId.value,
-      status: form.status,
+      status: payload.status,
     });
   } else {
     emit("create", {
       id: Date.now(),
       category: "task",
       createdAt: new Date().toISOString(),
-      ...form,
+      ...payload,
     });
   }
 
-  Object.assign(form, {
-    title: "",
-    description: "",
-    priority: "",
-    status: "",
-    assignedTo: "",
-  });
-
+  Object.values(fields).forEach((f) => (f.value = ""));
   close();
 };
 

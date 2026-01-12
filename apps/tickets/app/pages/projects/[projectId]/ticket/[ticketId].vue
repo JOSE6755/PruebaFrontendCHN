@@ -9,6 +9,7 @@
     <TicketDetail
       :ticket="ticket"
       @update-status="updateTicketStatus"
+      @delete="deleteTicket"
       class="w-full"
     />
 
@@ -18,7 +19,6 @@
     >
       <h3 class="text-lg font-semibold">Comentarios</h3>
 
-      <!-- Lista de comentarios -->
       <div
         v-if="ticket?.comments?.length"
         class="flex flex-col gap-3 max-h-96 overflow-y-auto"
@@ -44,7 +44,6 @@
         No hay comentarios todavía.
       </p>
 
-      <!-- Formulario para agregar comentario -->
       <div class="flex flex-col sm:flex-row gap-2 mt-2 w-full">
         <input
           v-model="newComment"
@@ -53,12 +52,18 @@
           class="input input-bordered flex-1 min-h-[2.5rem]"
           @keyup.enter="handleAddComment"
         />
-        <button
+        <BaseButton
           class="btn btn-primary w-full sm:w-auto min-h-[2.5rem]"
           @click="handleAddComment"
         >
           Agregar
-        </button>
+        </BaseButton>
+        <BaseButton
+          class="btn btn-primary w-full sm:w-auto min-h-[2.5rem]"
+          @click="generateComment"
+        >
+          Generar comentario
+        </BaseButton>
       </div>
     </div>
   </div>
@@ -68,9 +73,11 @@
 import TicketDetail from "~/components/organisms/TicketDetail.vue";
 import { useProjectsStore } from "~/stores/projects";
 import { ref, computed } from "vue";
+import { fetchRandomItem } from "utils";
 definePageMeta({
   middleware: "auth",
 });
+const authStore = userAuthStore();
 const projectsStore = useProjectsStore();
 const projects = computed(() => projectsStore.projects);
 
@@ -86,7 +93,6 @@ const ticket = computed(() =>
 
 const newComment = ref("");
 
-// Función para actualizar el estado del ticket
 function updateTicketStatus(payload: {
   id: number;
   status: "open" | "in_progress" | "closed";
@@ -95,12 +101,11 @@ function updateTicketStatus(payload: {
   projectsStore.updateTicketStatus(projectId, payload.id, payload.status);
 }
 
-// Función para agregar comentario
 function handleAddComment() {
   if (!newComment.value.trim() || !ticket.value) return;
 
   const comment = {
-    author: "Usuario", // Puedes reemplazar por el usuario real
+    author: "Usuario",
     text: newComment.value.trim(),
     createdAt: new Date().toISOString(),
   };
@@ -110,14 +115,33 @@ function handleAddComment() {
 
   newComment.value = "";
 
-  // Scroll al último comentario
+  setTimeout(() => {
+    const container = document.querySelector(".max-h-96");
+    if (container) container.scrollTop = container.scrollHeight;
+  }, 50);
+}
+async function generateComment() {
+  if (!ticket.value) return;
+
+  const textComment: string = await fetchRandomItem();
+  const comment = {
+    author: authStore.fullName,
+    text: textComment,
+    createdAt: new Date().toISOString(),
+  };
+  if (!ticket.value.comments) ticket.value.comments = [];
+  ticket.value.comments.push(comment);
   setTimeout(() => {
     const container = document.querySelector(".max-h-96");
     if (container) container.scrollTop = container.scrollHeight;
   }, 50);
 }
 
-// Formato de fecha para comentarios
+const deleteTicket = (ticketId: number) => {
+  projectsStore.deleteTicket(projectId, ticketId);
+  navigateTo(`/projects/${projectId}`);
+};
+
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleString("es-ES", {
     year: "numeric",

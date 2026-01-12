@@ -1,3 +1,5 @@
+import { fetchRandomItem } from "./fetch/useAxios";
 import { loginSchema } from "./validators/LoginValidator";
-
-export { loginSchema };
+import { ticketSchema } from "./validators/NewTicketValidator";
+export { loginSchema, ticketSchema };
+export { fetchRandomItem } from "./fetch/useAxios";
