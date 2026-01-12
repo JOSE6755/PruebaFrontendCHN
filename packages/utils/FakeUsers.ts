@@ -1,0 +1,51 @@
+import { User } from "../interfaces/user";
+export const users: User[] = [
+  {
+    id: 1,
+    firstName: "Carlos",
+    lastName: "Ramírez",
+    email: "carlos.ramirez@example.com",
+    password: "Admin123!",
+    roles: ["admin"],
+  },
+  {
+    id: 2,
+    firstName: "María",
+    lastName: "López",
+    email: "maria.lopez@example.com",
+    password: "Dev123!",
+    roles: ["developer"],
+  },
+  {
+    id: 3,
+    firstName: "José",
+    lastName: "Martínez",
+    email: "jose.martinez@example.com",
+    password: "Dev123!",
+    roles: ["developer"],
+  },
+  {
+    id: 4,
+    firstName: "Ana",
+    lastName: "Gómez",
+    email: "ana.gomez@example.com",
+    password: "View123!",
+    roles: ["viewer"],
+  },
+  {
+    id: 5,
+    firstName: "Luis",
+    lastName: "Hernández",
+    email: "luis.hernandez@example.com",
+    password: "View123!",
+    roles: ["viewer"],
+  },
+  {
+    id: 6,
+    firstName: "Sofía",
+    lastName: "Castillo",
+    email: "sofia.castillo@example.com",
+    password: "Admin123!",
+    roles: ["admin"],
+  },
+];

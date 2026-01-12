@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "tailwindcss-animated";
+@plugin "daisyui" {
+  themes:
+    autumn --default,
+    forest --prefersdark,
+    cupcake;
+}
