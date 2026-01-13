@@ -5,7 +5,7 @@
     <NuxtLink :to="`/projects/${projectId}`" class="btn btn-outline btn-sm">
       ← Volver
     </NuxtLink>
-    <!-- Detalle del ticket -->
+
     <TicketDetail
       :ticket="ticket"
       @update-status="updateTicketStatus"
@@ -13,7 +13,6 @@
       class="w-full"
     />
 
-    <!-- Comentarios -->
     <div
       class="w-full bg-base-200 p-4 rounded-lg shadow-md flex flex-col gap-4"
     >
@@ -105,7 +104,7 @@ function handleAddComment() {
   if (!newComment.value.trim() || !ticket.value) return;
 
   const comment = {
-    author: "Usuario",
+    author: authStore.fullName,
     text: newComment.value.trim(),
     createdAt: new Date().toISOString(),
   };

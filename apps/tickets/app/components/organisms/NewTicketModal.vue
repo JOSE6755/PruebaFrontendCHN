@@ -5,7 +5,6 @@
     </h3>
 
     <form class="space-y-4" @submit.prevent="submit">
-      <!-- Título -->
       <FormField
         v-model="fields.title.value"
         label="Título"
@@ -14,7 +13,6 @@
         :disabled="isEdit"
       />
 
-      <!-- Descripción -->
       <div class="w-full flex flex-col gap-2 p-2">
         <label class="label">
           <span class="label-text">Descripción</span>
@@ -30,7 +28,6 @@
         </span>
       </div>
 
-      <!-- Prioridad + Estado -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="w-full flex flex-col gap-2 p-2">
           <label class="label">
@@ -70,7 +67,6 @@
         </div>
       </div>
 
-      <!-- Asignado -->
       <FormField
         v-model="fields.assignedTo.value"
         label="Asignado a"
@@ -109,9 +105,6 @@ const emit = defineEmits<{
   (e: "update-status", payload: { id: number; status: string }): void;
 }>();
 
-/**
- * Campos + errores agrupados
- */
 const fields = reactive({
   title: { value: "", error: "" },
   description: { value: "", error: "" },
@@ -142,9 +135,6 @@ const close = () => {
   baseModalRef.value?.close();
 };
 
-/**
- * Validación con TODOS los errores
- */
 const validate = async () => {
   if (isEdit.value) return true;
 

@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import TicketChart from "~/components/organisms/TicketChart.vue";
+definePageMeta({
+  middleware: "auth",
+  roles: ["admin"],
+});
 </script>
 
 <template>

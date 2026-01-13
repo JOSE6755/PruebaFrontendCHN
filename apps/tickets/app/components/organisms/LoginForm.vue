@@ -50,7 +50,6 @@ async function validateForm(): Promise<boolean> {
     <div
       class="w-full max-w-md bg-base-100 rounded-xl shadow-lg p-6 flex flex-col gap-6"
     >
-      <!-- Header -->
       <div class="text-center">
         <h2 class="text-2xl font-bold text-base-content">Iniciar sesión</h2>
         <p class="text-sm text-base-content opacity-70">

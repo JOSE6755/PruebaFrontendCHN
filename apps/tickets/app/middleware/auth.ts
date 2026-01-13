@@ -12,12 +12,10 @@ export default defineNuxtRouteMiddleware((to) => {
   const requiredRoles = to.meta.roles as UserRole[] | undefined;
 
   if (requiredRoles && requiredRoles.length > 0) {
-    console.log("hola amicos desde middleware");
-
     const hasPermission = requiredRoles.some((role) => authStore.hasRole(role));
 
     if (!hasPermission) {
-      return navigateTo("/");
+      return navigateTo("/projects");
     }
   }
 });

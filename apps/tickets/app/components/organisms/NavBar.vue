@@ -42,7 +42,7 @@
       </BaseButton>
 
       <div class="dropdown dropdown-end md:hidden">
-        <button class="btn btn-ghost btn-circle">☰</button>
+        <BaseButton class="btn btn-ghost btn-circle">☰</BaseButton>
         <ul
           class="menu menu-sm dropdown-content bg-base-100 rounded-box shadow mt-3 w-40"
         >
@@ -60,7 +60,7 @@
             >
           </li>
           <li v-if="isAuthenticated">
-            <button @click="logout">Logout</button>
+            <BaseButton @click="logout">Logout</BaseButton>
           </li>
         </ul>
       </div>

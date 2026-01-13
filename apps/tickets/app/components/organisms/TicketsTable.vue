@@ -11,12 +11,10 @@
 
     <NewTicketModal ref="createTicketModal" @create="createTicket" />
     <DeleteTicketModal ref="deleteTicketModal" @confirm="confirmDeleteTicket" />
-    <!-- Filtros -->
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-      <!-- Título -->
       <BaseInput v-model="titleFilter" placeholder="Buscar por título" />
 
-      <!-- Prioridad -->
       <select v-model="priorityFilter" class="select select-bordered w-full">
         <option value="">Todas las prioridades</option>
         <option value="high">Alta</option>
@@ -24,7 +22,6 @@
         <option value="low">Baja</option>
       </select>
 
-      <!-- Estado -->
       <select v-model="statusFilter" class="select select-bordered w-full">
         <option value="">Todos los estados</option>
         <option value="open">Abierto</option>
@@ -32,14 +29,11 @@
         <option value="closed">Cerrado</option>
       </select>
 
-      <!-- Fecha desde -->
       <BaseInput v-model="dateFrom" type="date" />
 
-      <!-- Fecha hasta -->
       <BaseInput v-model="dateTo" type="date" />
     </div>
 
-    <!-- Tabla -->
     <div class="overflow-x-auto">
       <table class="table table-zebra w-full">
         <thead class="hidden md:table-header-group">
@@ -67,7 +61,6 @@
       </table>
     </div>
 
-    <!-- Empty state -->
     <p
       v-if="filteredTickets?.length === 0"
       class="text-center mt-4 text-base-content opacity-70"
@@ -100,9 +93,7 @@ const createTicketModal = ref<InstanceType<typeof NewTicketModal> | null>(null);
 const deleteTicketModal = ref<InstanceType<typeof DeleteTicketModal> | null>(
   null
 );
-/* =====================
-   FILTROS
-===================== */
+
 const titleFilter = ref("");
 const priorityFilter = ref("");
 const statusFilter = ref("");
@@ -140,9 +131,6 @@ const filteredTickets = computed(() => {
   });
 });
 
-/* =====================
-   ACCIONES
-===================== */
 const onView = (ticket: Ticket) => {
   navigateTo({
     path: `${route.path}/ticket/${ticket.id}`,

@@ -11,13 +11,12 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
-import { useProjectsStore } from "~/stores/projects"; // ajusta según tu store
+import { useProjectsStore } from "~/stores/projects";
 
 const router = useRouter();
 const projectsStore = useProjectsStore();
 const projects = computed(() => projectsStore.projects);
 
-// Registrar Chart.js
 ChartJS.register(
   Title,
   Tooltip,
@@ -27,12 +26,10 @@ ChartJS.register(
   LinearScale
 );
 
-// Flatten todos los tickets
 const tickets = computed(() => projects.value.flatMap((p) => p.tickets));
 
-// Agrupar tickets por fecha y estado
 const groupedData = computed(() => {
-  const data: Record<string, Record<string, number>> = {}; // {fecha: {estado: cantidad}}
+  const data: Record<string, Record<string, number>> = {};
   tickets.value.forEach((ticket) => {
     const date = new Date(ticket.createdAt).toLocaleDateString("es-ES");
     if (!data[date]) data[date] = { open: 0, in_progress: 0, closed: 0 };
@@ -42,34 +39,31 @@ const groupedData = computed(() => {
   return data;
 });
 
-// Labels de fechas ordenadas
 const labels = Object.keys(groupedData.value).sort(
   (a, b) => new Date(a).getTime() - new Date(b).getTime()
 );
 
-// Datos para Chart.js
 const chartData = computed(() => ({
   labels,
   datasets: [
     {
       label: "Abiertos",
-      backgroundColor: "#f87171", // rojo
+      backgroundColor: "#f87171",
       data: labels.map((d) => groupedData.value[d]?.open || 0),
     },
     {
       label: "En progreso",
-      backgroundColor: "#facc15", // amarillo
+      backgroundColor: "#facc15",
       data: labels.map((d) => groupedData.value[d]?.in_progress || 0),
     },
     {
       label: "Cerrados",
-      backgroundColor: "#34d399", // verde
+      backgroundColor: "#34d399",
       data: labels.map((d) => groupedData.value[d]?.closed || 0),
     },
   ],
 }));
 
-// Opciones responsivas y apiladas
 const chartOptions = {
   responsive: true,
   plugins: {
@@ -82,7 +76,6 @@ const chartOptions = {
   },
 };
 
-// Función para volver a /projects
 const goBack = () => {
   router.push("/projects");
 };
@@ -90,7 +83,6 @@ const goBack = () => {
 
 <template>
   <div class="w-full max-w-6xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
-    <!-- HEADER -->
     <header class="flex flex-col items-center gap-2">
       <h1 class="text-2xl sm:text-3xl font-bold text-base-content text-center">
         Tickets Dashboard
@@ -100,14 +92,12 @@ const goBack = () => {
       </p>
     </header>
 
-    <!-- BOTÓN VOLVER -->
     <div class="self-start">
-      <button @click="goBack" class="btn btn-ghost btn-sm">
+      <BaseButton @click="goBack" class="btn btn-ghost btn-sm">
         ← Volver a Proyectos
-      </button>
+      </BaseButton>
     </div>
 
-    <!-- CONTENEDOR DEL GRÁFICO -->
     <div class="bg-base-100 rounded-xl shadow-lg p-4 sm:p-6 overflow-x-auto">
       <h2
         class="text-xl sm:text-2xl font-bold text-base-content mb-4 text-center"

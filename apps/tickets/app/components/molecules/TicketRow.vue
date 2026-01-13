@@ -31,7 +31,6 @@
       {{ formatDate(ticket.createdAt) }}
     </td>
 
-    <!-- ACCIONES -->
     <td class="block md:table-cell mt-3 md:mt-0">
       <div class="flex gap-2 justify-end md:justify-center">
         <BaseButton class="btn btn-xs btn-info" @click="$emit('view', ticket)">
@@ -45,6 +44,7 @@
         </BaseButton> -->
         <BaseButton
           class="btn btn-xs btn-error"
+          v-if="authStore.hasRole('admin')"
           @click="$emit('delete', ticket)"
         >
           Borrar
@@ -57,22 +57,16 @@
 <script setup lang="ts">
 import PriorityBadge from "../atoms/PriorityBadge.vue";
 import StatusBadge from "../atoms/StatusBadge.vue";
+import { userAuthStore } from "#imports";
+import type { TicketRow } from "interfaces";
+const authStore = userAuthStore();
 
-interface Ticket {
-  id: number;
-  title: string;
-  priority: "high" | "medium" | "low";
-  status: "open" | "in_progress" | "closed";
-  assignedTo: string;
-  createdAt: string;
-}
-
-defineProps<{ ticket: Ticket }>();
+defineProps<{ ticket: TicketRow }>();
 
 // defineEmits<{
-//   (e: "view", ticket: Ticket): void;
-//   (e: "edit", ticket: Ticket): void;
-//   (e: "delete", ticket: Ticket): void;
+//   (e: "view", ticket: TicketRow): void;
+//   (e: "edit", ticket: TicketRow): void;
+//   (e: "delete", ticket: TicketRow): void;
 // }>();
 
 const formatDate = (dateStr: string) =>

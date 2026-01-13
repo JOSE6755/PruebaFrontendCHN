@@ -9,3 +9,11 @@ export interface Ticket {
   createdAt: string;
   comments: any[];
 }
+export interface TicketRow {
+  id: number;
+  title: string;
+  priority: "high" | "medium" | "low";
+  status: "open" | "in_progress" | "closed";
+  assignedTo: string;
+  createdAt: string;
+}

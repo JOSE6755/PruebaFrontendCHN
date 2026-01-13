@@ -15,9 +15,9 @@ const formatDate = (date: string) =>
   });
 
 const ticketModal = ref<InstanceType<typeof NewTicketModal> | null>(null);
-const deleteModal = ref<InstanceType<typeof DeleteTicketModal> | null>(null); // 👈 agregado
+const deleteModal = ref<InstanceType<typeof DeleteTicketModal> | null>(null);
 
-const emit = defineEmits(["update-status", "delete"]); // 👈 agregado delete
+const emit = defineEmits(["update-status", "delete"]);
 
 function openModal(ticket: Ticket | null) {
   if (!ticket) {
@@ -49,7 +49,6 @@ function confirmDelete(ticketId: number) {
     class="card bg-base-100 shadow-md border border-base-300 w-full max-w-2xl"
   >
     <div class="card-body gap-4">
-      <!-- HEADER -->
       <div class="flex flex-col md:flex-row justify-between gap-3">
         <h2 class="card-title text-xl">
           {{ ticket.title }}
@@ -61,12 +60,10 @@ function confirmDelete(ticketId: number) {
         </div>
       </div>
 
-      <!-- DESCRIPTION -->
       <p class="text-base-content/80">
         {{ ticket.description }}
       </p>
 
-      <!-- INFO GRID -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <div>
           <span class="font-semibold">Categoría:</span>
@@ -93,7 +90,6 @@ function confirmDelete(ticketId: number) {
 
     <NewTicketModal ref="ticketModal" @update-status="updateTicketStatus" />
 
-    <!-- 👇 agregado -->
     <DeleteTicketModal ref="deleteModal" @confirm="confirmDelete" />
   </div>
 </template>
