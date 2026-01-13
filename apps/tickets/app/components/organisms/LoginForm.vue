@@ -65,7 +65,6 @@ async function validateForm(): Promise<boolean> {
         <Alert type="error" :message="errorMessage" />
       </div>
 
-      <!-- Form -->
       <div class="flex flex-col gap-4">
         <FormField
           v-model="correo"
@@ -85,7 +84,6 @@ async function validateForm(): Promise<boolean> {
         />
       </div>
 
-      <!-- Action -->
       <BaseButton
         class="btn-primary w-full mt-2"
         @click="submit"

@@ -30,11 +30,22 @@ export const userAuthStore = defineStore("auth", {
       if (!foundUser) return false;
 
       this.user = foundUser;
+      localStorage.setItem("user", JSON.stringify(foundUser));
       return true;
     },
 
     logout() {
       this.user = null;
+      localStorage.removeItem("user");
+    },
+    loadUserFromStorage() {
+      console.log("empieza storage");
+      const storedUser = localStorage.getItem("user");
+      console.log(storedUser);
+      if (storedUser) {
+        this.user = JSON.parse(storedUser);
+      }
+      console.log("termina storage");
     },
   },
 });

@@ -32,7 +32,6 @@ const emit = defineEmits<{
   (e: "confirm", id: number): void;
 }>();
 
-// 👇 método explícito (NO colisiona con otros modales)
 const open = (ticketData: any) => {
   ticket.value = ticketData;
   modalRef.value?.open();

@@ -1,25 +1,30 @@
 <template>
   <div class="navbar bg-base-100 shadow-md px-4">
-    <!-- LEFT -->
     <div class="flex-1">
       <NuxtLink to="/" class="text-xl font-bold">
         Ticket<span class="text-primary">System</span>
       </NuxtLink>
     </div>
 
-    <!-- DESKTOP MENU -->
     <div class="hidden md:flex gap-2">
-      <NuxtLink to="/" class="btn btn-ghost btn-sm"> Proyectos </NuxtLink>
+      <NuxtLink
+        v-if="isAuthenticated"
+        to="/projects"
+        class="btn btn-ghost btn-sm"
+      >
+        Proyectos
+      </NuxtLink>
       <NuxtLink to="/about" class="btn btn-ghost btn-sm"> About </NuxtLink>
-      <!-- BOTÓN DASHBOARD -->
-      <NuxtLink to="/dashboard" class="btn btn-primary btn-sm">
+      <NuxtLink
+        v-if="isAuthenticated && authStore.hasRole('admin')"
+        to="/dashboard"
+        class="btn btn-primary btn-sm"
+      >
         Dashboard
       </NuxtLink>
     </div>
 
-    <!-- RIGHT -->
     <div class="flex items-center gap-2">
-      <!-- Theme toggle -->
       <BaseButton
         class="btn-ghost btn-circle"
         @click="toggleTheme"
@@ -28,20 +33,34 @@
         🌙
       </BaseButton>
 
-      <!-- Mobile menu -->
+      <BaseButton
+        v-if="isAuthenticated"
+        class="btn-error btn-sm"
+        @click="logout"
+      >
+        Logout
+      </BaseButton>
+
       <div class="dropdown dropdown-end md:hidden">
         <button class="btn btn-ghost btn-circle">☰</button>
         <ul
           class="menu menu-sm dropdown-content bg-base-100 rounded-box shadow mt-3 w-40"
         >
           <li>
-            <NuxtLink to="/">Proyectos</NuxtLink>
+            <NuxtLink v-if="isAuthenticated" to="/projects">Proyectos</NuxtLink>
           </li>
           <li>
             <NuxtLink to="/about">About</NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/dashboard">Dashboard</NuxtLink>
+            <NuxtLink
+              v-if="isAuthenticated && authStore.hasRole('admin')"
+              to="/dashboard"
+              >Dashboard</NuxtLink
+            >
+          </li>
+          <li v-if="isAuthenticated">
+            <button @click="logout">Logout</button>
           </li>
         </ul>
       </div>
@@ -50,7 +69,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import { userAuthStore } from "~/stores/users";
+
+const router = useRouter();
+
+const authStore = userAuthStore();
+
+const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 const theme = ref("forest");
 const toggleTheme = () => {
@@ -70,4 +97,9 @@ onMounted(() => {
     localStorage.getItem("theme") || "forest"
   );
 });
+
+const logout = () => {
+  authStore.logout();
+  router.push("/");
+};
 </script>

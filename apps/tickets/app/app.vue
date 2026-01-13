@@ -5,9 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import LoginForm from "./components/organisms/LoginForm.vue";
+const authStore = userAuthStore();
 
-const test = ref("");
+onMounted(() => {
+  authStore.loadUserFromStorage();
+  console.log(authStore.isAuthenticated);
+});
 </script>
 
 <style>
