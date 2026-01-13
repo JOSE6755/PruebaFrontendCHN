@@ -1,84 +1,129 @@
-# Turborepo VueJS/NuxtJS starter
+SISTEMA DE TICKETS CLIENTE 360
+Este sistema soluciona una problemática que se esta observando actualmente dentro de la institución al momento de desplegar nuevas características dentro del sistema de Cliente 360.
+Problemas:
+• Multiples incidencias descentralizadas
+• Dificultad para el seguimiento de las incidencias
+• Complejidad para recopilar cada una de las mismas
+• Duplicacion de incidencias
+• Incidencias quedan sin resolver
+• Historial de incidencias resultas
+• Ausencia de responsables de resolución
+• Imposibilidad de medir desempeño
+Limitaciones:
+• Personal
+• Tiempo
+• Orden
+Solucion:
+Se propone el diseño e implementación de un sistema integral de gestión de tickets, orientado a mejorar el seguimiento, control y análisis de incidencias por proyecto, mediante una arquitectura moderna, escalable. La solución estará enfocada en ofrecer una experiencia de usuario ágil, reducir los tiempos de respuesta y facilitar la toma de decisiones a través de información centralizada y métricas claras.
+Tecnologias:
+• VueJS
+• Java SpringBoot
+• MinIO
+• MongoDB
+• Redis
+• PostgreSQL
+• NGINX
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+Implementacion:
+Realizar una interfaz de usuario moderna utilizando VueJS y Nuxt, asi como estilos utilizando TailwindCSS, protegiendo rutas mediante un sistema de roles y Json Web Tokens (JWT), Asincronia para evitar largas esperas a los usuarios, Un backend en Java utilizando Spring boot para robustes, Seguido de una arquitectura por capas separando controladores, servicios, repositorios, daos y dtos, hacer uso de MinIO para el almacenamiento de archivos en diferentes formatos, uso de PostgreSQL para persistencia de datos que no requieran de alta concurrencia, uso de MongoDB para guardado de logs y auditoria, Redis para mantener data en cache que se consulta con regularidad como lo pueden ser el listado de tickets, Docker para empaquetar cada uno de los componentes para alta portabilidad y versionamiento de imágenes para contenedores.
+Impacto:
+• Mejor seguimiento de tickets por proyecto
+• Centralización de los tickets segmentándolos por proyecto
+• Graficas centralizadas para verificar cantidad de tickets en diferentes estados y rendimiento de las personas de soporte
+• Reducción de tiempos de respuesta y resolución
+• Mejora en la comunicación con los usuarios
 
-## Using this example
+Justificacion monorepo
+¿Por qué Turborepo?
+Turborepo es una herramienta moderna para monorepositorios enfocada en:
+• Ejecución paralela y cacheada de tareas
+• Alto rendimiento en builds y tests
+• Integración natural con npm / pnpm / yarn workspaces
+• Simplicidad de configuración
+Justificación:
+Turborepo permite escalar repositorios con múltiples paquetes compartidos manteniendo tiempos de build bajos, dependencias explícitas y alta cohesión entre módulos, sin imponer una estructura rígida.
 
-Run the following command:
+monorepo/
+├── apps/
+│ └── web/  
+│
+├── packages/
+│ ├── ui/
+│ ├── utils/
+│ ├── settings/
+│ └── interfaces/
+│
+├── turbo.json
+├── package.json
+├── tsconfig.base.json
+└── .eslintrc.js
 
-```sh
-npx create-turbo@latest -e with-vue-nuxt
-```
+• apps/ → productos finales
+• packages/ → librerías reutilizables y compartidas
 
-## What's inside?
+packages/interfaces
+Centralizar interfaces y tipos TypeScript compartidos, garantizando:
+• Tipado consistente entre aplicaciones y librerías
+• Contratos de datos claros
+• Reducción de errores
+Estructura
+packages/interfaces/
+├── src/
+│ ├── ticket.interface.ts
+│ ├── user.interface.ts
+│ └── index.ts
+├── package.json
+└── tsconfig.json
+4.2 packages/utils
+Proveer funciones de utilidad, helpers y hooks reutilizables:
+• Formateo de datos
+• Validaciones
+• Hooks comunes
+• Lógica transversal
 
-This Turborepo includes the following packages/apps:
+packages/utils/
+├── src/
+│ ├── date.utils.ts
+│ ├── validation.utils.ts
+│ ├── hooks/
+│ │ └── useDebounce.ts
+│ └── index.ts
 
-### Apps and Packages
+4.3 packages/settings
+Centralizar configuraciones compartidas y constantes globales:
+• Variables de entorno tipadas
+• Constantes de aplicación
+• Configuración de ESLint / Prettier / Husky
+Estructura
+packages/settings/
+├── src/
+│ ├── env.ts
+│ ├── constants.ts
+│ └── index.ts
+├── eslint/
+│ │ └── base.eslintrc.js
+Ejemplo:
+export const APP_NAME = 'Ticket System';
+export const DEFAULT_PAGE_SIZE = 10;
 
-- `docs`: a [Nuxt](https://nuxt.com/) app
-- `web`: another [Vue3](https://vuejs.org/) app
-- `ui`: a stub Vue component library shared by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `@nuxtjs/eslint-config-typescript` and `@vue/eslint-config-typescript`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+Justificación
+Evita duplicación y asegura coherencia de configuración en todo el monorepo.
+4.4 packages/ui
+Propósito
+Implementar una biblioteca de componentes de UI reutilizables, desacoplada de aplicaciones concretas.
+Ejemplos:
+• Button
+• Modal
+• Table
+• Componentes de dominio (TicketCard)
+Estructura
+packages/ui/
+├── src/
+│ ├── components/
+│ │ ├── Button/
+│ │ ├── TicketCard/
+│ │ └── Modal/
+│ ├── theme/
+│ └── index.ts
+Justificación
+ui se sitúa en la capa superior del monorepo, consumiendo tipado, utilidades y configuración compartida.
